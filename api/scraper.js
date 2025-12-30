@@ -2,11 +2,13 @@ const CACHE_TTL = 5 * 60 * 1000;
 const cache = global.cache || (global.cache = new Map());
 
 const INSTANCES = [
-  "https://nitter.poast.org",
   "https://nitter.privacydev.net",
+  "https://nitter.poast.org",
   "https://nitter.perennialte.ch",
   "https://nitter.esmailelbob.xyz",
-  "https://nitter.no-logs.com"
+  "https://nitter.no-logs.com",
+  "https://nitter.projectsegfau.lt",
+  "https://nitter.rawbit.ninja"
 ];
 
 export default async function handler(req, res) {
