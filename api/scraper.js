@@ -3,7 +3,7 @@ const cache = global.cache || (global.cache = new Map());
 
 const INSTANCES = [
   "https://nitter.privacydev.net",
-  "https://nitter.poast.org",
+  "https://nitter.privacyredirect.com/",
   "https://nitter.perennialte.ch",
   "https://nitter.esmailelbob.xyz",
   "https://nitter.no-logs.com",
