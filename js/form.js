@@ -1,44 +1,48 @@
 document.getElementById('wrappedForm').addEventListener('submit', async (e) => {
-  e.preventDefault(); // Mencegah halaman reload saat form dikirim
+    e.preventDefault();
 
-  const username = document.getElementById('xUsername').value;
-  const discordChats = document.getElementById('discordChats').value;
-  const magnitude = document.getElementById('magnitude').value;
+    const usernameInput = document.getElementById('xUsername').value.trim();
+    const discordChats = document.getElementById('discordChats').value;
+    const magnitude = document.getElementById('magnitude').value;
+    const submitBtn = e.target.querySelector('button');
 
-  // Tampilkan loading (opsional, ganti teks tombol misalnya)
-  const submitBtn = e.target.querySelector('button');
-  submitBtn.innerText = "Processing...";
-  submitBtn.disabled = true;
+    // Menghilangkan tanda '@' jika user memasukkannya
+    const username = usernameInput.replace('@', '');
 
-  try {
-    // 1. Panggil API Scraper yang ada di folder api/
-    const response = await fetch(`/api/scraper?username=${username}`);
-    const data = await response.json();
+    // UI Loading
+    submitBtn.innerText = "Mencari Data...";
+    submitBtn.disabled = true;
 
-    if (data.error) {
-      alert("Gagal mengambil data: " + data.error);
-      submitBtn.innerText = "Generate";
-      submitBtn.disabled = false;
-      return;
+    try {
+        // Memanggil API yang ada di folder api/
+        const response = await fetch(`/api/scraper?username=${username}`);
+        
+        if (!response.ok) {
+            const errorData = await response.json();
+            throw new Error(errorData.error || "Gagal menghubungi server");
+        }
+
+        const data = await response.json();
+
+        // Gabungkan data dari form dan hasil scraper
+        const wrappedResult = {
+            username: username,
+            discordCount: discordChats,
+            magnitude: magnitude,
+            xData: data // Berisi total tweet dan best tweet
+        };
+
+        // Simpan ke localStorage agar bisa dibaca di result.html
+        localStorage.setItem('wrappedData', JSON.stringify(wrappedResult));
+
+        // Pindah ke halaman hasil
+        window.location.href = 'result.html';
+
+    } catch (err) {
+        console.error("Error:", err);
+        alert("Terjadi Kesalahan: " + err.message);
+    } finally {
+        submitBtn.innerText = "Generate";
+        submitBtn.disabled = false;
     }
-
-    // 2. Simpan semua data ke localStorage agar bisa dibaca di result.html
-    const finalData = {
-      username: username,
-      discordChats: discordChats,
-      magnitude: magnitude,
-      xData: data // Berisi 'total' dan 'tweet' dari scraper.js
-    };
-    
-    localStorage.setItem('wrappedData', JSON.stringify(finalData));
-
-    // 3. Pindah ke halaman hasil
-    window.location.href = 'result.html';
-
-  } catch (error) {
-    console.error("Error:", error);
-    alert("Terjadi kesalahan koneksi.");
-    submitBtn.innerText = "Generate";
-    submitBtn.disabled = false;
-  }
 });
