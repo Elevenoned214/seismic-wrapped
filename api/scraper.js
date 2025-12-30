@@ -1,7 +1,6 @@
 const CACHE_TTL = 5 * 60 * 1000; 
 const cache = global.cache || (global.cache = new Map());
 
-// Daftar instance Nitter yang lebih stabil
 const INSTANCES = [
   "https://nitter.poast.org",
   "https://nitter.privacydev.net",
@@ -12,9 +11,8 @@ const INSTANCES = [
 
 export default async function handler(req, res) {
   const { username } = req.query;
-  if (!username) return res.status(400).json({ error: "Username X diperlukan" });
+  if (!username) return res.status(400).json({ error: "username required" });
 
-  // Cek Cache
   const cached = cache.get(username);
   if (cached && Date.now() - cached.time < CACHE_TTL) {
     return res.json(cached.data);
@@ -22,23 +20,15 @@ export default async function handler(req, res) {
 
   for (const base of INSTANCES) {
     try {
-      // Mencari tweet berisi kata 'seismic' dari user tersebut di tahun 2025
       const q = `seismic from:${username} since:2025-01-01 until:2025-12-31`;
       const url = `${base}/search?f=tweets&q=${encodeURIComponent(q)}`;
 
-      console.log(`Mencoba server: ${base}`);
-
       const r = await fetch(url, {
-        headers: { 
-            "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36" 
-        },
-        signal: AbortSignal.timeout(5000) // Timeout 5 detik per server
+        headers: { "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36" }
       });
-      
       if (!r.ok) continue;
 
       const html = await r.text();
-      // Mengambil tiap blok tweet
       const items = [...html.matchAll(/timeline-item([\s\S]*?)timeline-item/g)];
 
       let best = null, bestScore = 0, total = 0;
@@ -53,7 +43,7 @@ export default async function handler(req, res) {
         const rts = num(block, "icon-retweet");
         const replies = num(block, "icon-comment");
 
-        const score = likes + (rts * 2) + (replies * 1.5);
+        const score = likes + rts * 2 + replies * 1.5;
         if (score > bestScore) {
           bestScore = score;
           best = { text, likes, rts, replies };
@@ -62,24 +52,17 @@ export default async function handler(req, res) {
 
       const data = {
         total,
-        tweet: best || {
-          text: "Tidak ditemukan tweet dengan kata 'seismic' di tahun 2025.",
-          likes: 0,
-          rts: 0,
-          replies: 0
-        }
+        tweet: best || { text: "No seismic tweet in 2025", likes: 0, rts: 0, replies: 0 }
       };
 
       cache.set(username, { time: Date.now(), data });
       return res.json(data);
 
     } catch (e) {
-      console.error(`Gagal di ${base}:`, e.message);
-      continue; // Coba server berikutnya jika gagal
+      continue;
     }
   }
-
-  res.status(503).json({ error: "Semua server X/Nitter sedang sibuk. Silakan coba lagi nanti." });
+  res.status(503).json({ error: "Semua server sibuk. Coba lagi nanti." });
 }
 
 function extract(html, regex) {
