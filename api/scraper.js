@@ -1,17 +1,18 @@
-const CACHE_TTL = 5 * 60 * 1000; // 5 menit
+const CACHE_TTL = 5 * 60 * 1000; 
 const cache = global.cache || (global.cache = new Map());
 
+// Daftar instance Nitter terbaru yang lebih stabil
 const INSTANCES = [
-  "https://nitter.net",
   "https://nitter.poast.org",
-  "https://nitter.privacydev.net"
+  "https://nitter.privacydev.net",
+  "https://nitter.perennialte.ch",
+  "https://nitter.esmailelbob.xyz",
+  "https://nitter.no-logs.com"
 ];
 
 export default async function handler(req, res) {
   const { username } = req.query;
-  if (!username) {
-    return res.status(400).json({ error: "username required" });
-  }
+  if (!username) return res.status(400).json({ error: "username required" });
 
   const cached = cache.get(username);
   if (cached && Date.now() - cached.time < CACHE_TTL) {
@@ -20,21 +21,27 @@ export default async function handler(req, res) {
 
   for (const base of INSTANCES) {
     try {
+      // Query mencari kata 'seismic' dari user spesifik di tahun 2025
       const q = `seismic from:${username} since:2025-01-01 until:2025-12-31`;
       const url = `${base}/search?f=tweets&q=${encodeURIComponent(q)}`;
 
+      console.log(`Checking instance: ${base}`);
+
       const r = await fetch(url, {
-        headers: { "User-Agent": "Mozilla/5.0" }
+        headers: { "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36" }
       });
-      if (!r.ok) throw new Error("bad response");
+      
+      if (!r.ok) continue;
 
       const html = await r.text();
+      // Regex untuk memisahkan setiap tweet
       const items = [...html.matchAll(/timeline-item([\s\S]*?)timeline-item/g)];
 
       let best = null, bestScore = 0, total = 0;
 
       for (const m of items) {
         const block = m[0];
+        // Validasi apakah tweet benar-benar mengandung kata 'seismic'
         if (!block.toLowerCase().includes("seismic")) continue;
         total++;
 
@@ -43,6 +50,7 @@ export default async function handler(req, res) {
         const rts = num(block, "icon-retweet");
         const replies = num(block, "icon-comment");
 
+        // Rumus skor untuk menentukan 'Best Post'
         const score = likes + rts * 2 + replies * 1.5;
         if (score > bestScore) {
           bestScore = score;
@@ -53,7 +61,7 @@ export default async function handler(req, res) {
       const data = {
         total,
         tweet: best || {
-          text: "No seismic tweet in 2025",
+          text: "Belum ada tweet dengan kata 'seismic' di 2025.",
           likes: 0,
           rts: 0,
           replies: 0
@@ -64,11 +72,11 @@ export default async function handler(req, res) {
       return res.json(data);
 
     } catch (e) {
-      // coba instance berikutnya
+      console.error(`Error at ${base}:`, e.message);
     }
   }
 
-  res.status(500).json({ error: "all instances failed" });
+  res.status(500).json({ error: "Semua server Nitter sedang sibuk. Coba lagi nanti." });
 }
 
 function extract(html, regex) {
@@ -80,7 +88,7 @@ function num(html, cls) {
   const r = new RegExp(cls + "[\\s\\S]*?>([0-9\\.K]+)<");
   const m = html.match(r);
   if (!m) return 0;
-  return m[1].includes("K")
-    ? Math.round(parseFloat(m[1]) * 1000)
-    : parseInt(m[1]);
+  let val = m[1];
+  if (val.includes("K")) return Math.round(parseFloat(val) * 1000);
+  return parseInt(val);
 }
