@@ -16,7 +16,7 @@ export default async function handler(req, res) {
 
   for (const base of INSTANCES) {
     try {
-      const q = `seismic from:${username} since:2025-01-01 until:2025-12-31`;
+      const q = `seismic ${username}`;
       const url = `${base}/search?f=tweets&q=${encodeURIComponent(q)}`;
 
       const r = await fetch(url, {
@@ -34,7 +34,7 @@ export default async function handler(req, res) {
         if (!block.toLowerCase().includes("seismic")) continue;
         total++;
 
-        const text = extract(block, /tweet-content[^>]*>([\s\S]*?)</);
+        const text = extract(block, /class="tweet-content[^>]*>([\s\S]*?)<\/div>/);
         const likes = num(block, "icon-heart");
         const rts = num(block, "icon-retweet");
         const replies = num(block, "icon-comment");
