@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Your Seismic Wrapped</title>
+<link rel="stylesheet" href="css/style.css">
+<link rel="stylesheet" href="css/result.css">
+</head>
+<body>
+
+<div class="result-container" id="recordArea">
+
+  <div class="scene active" id="scene1">
+    <h2>YOUR SEISMIC IMPACT</h2>
+    <div class="stat" id="discordCount">0</div>
+    <div class="stat" id="tweetCount">0</div>
+  </div>
+
+  <div class="scene" id="scene2">
+    <h2>YOUR BEST POST</h2>
+    <p id="tweetContent"></p>
+    ❤️ <span id="likesCount">0</span>
+    🔁 <span id="retweetsCount">0</span>
+    💬 <span id="repliesCount">0</span>
+  </div>
+
+  <div class="scene" id="scene3">
+    <h2>YOUR MAGNITUDE</h2>
+    <img id="magnitudeBadge">
+  </div>
+
+  <footer id="userUsername"></footer>
+</div>
+
+<button id="downloadBtn">⬇ Download MP4</button>
+
+<script src="https://unpkg.com/@ffmpeg/ffmpeg@0.12.6/dist/ffmpeg.min.js"></script>
+<script src="js/scraper.js"></script>
+<script src="js/animation.js"></script>
+<script src="js/export.js"></script>
+</body>
+</html>

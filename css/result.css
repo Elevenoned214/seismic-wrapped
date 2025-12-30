@@ -1,0 +1,143 @@
+/* =========================================
+   GLOBAL RESET
+   ========================================= */
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  background: #000;
+  color: #fff;
+  font-family: "Inter", Arial, sans-serif;
+  overflow: hidden;
+}
+
+/* =========================================
+   MAIN CONTAINER (VIDEO SAFE)
+   9:16 friendly + mobile safe
+   ========================================= */
+.result-container {
+  position: relative;
+  width: 100%;
+  max-width: 420px;
+  height: 100vh;
+  margin: 0 auto;
+  padding: 24px 16px;
+  text-align: center;
+}
+
+/* =========================================
+   SCENE BASE
+   ========================================= */
+.scene {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+
+  opacity: 0;
+  transform: translateY(24px) scale(0.98);
+  transition:
+    opacity 0.6s ease,
+    transform 0.6s ease;
+}
+
+.scene.active {
+  opacity: 1;
+  transform: translateY(0) scale(1);
+}
+
+/* =========================================
+   TYPOGRAPHY
+   ========================================= */
+h2 {
+  margin-bottom: 24px;
+  font-size: clamp(14px, 4vw, 18px);
+  letter-spacing: 0.25em;
+  opacity: 0.85;
+}
+
+.stat {
+  font-size: clamp(36px, 10vw, 56px);
+  font-weight: 700;
+  margin: 8px 0;
+}
+
+/* =========================================
+   TWEET CONTENT
+   ========================================= */
+#tweetContent {
+  font-size: clamp(14px, 4vw, 16px);
+  line-height: 1.6;
+  max-width: 90%;
+  margin-bottom: 16px;
+  opacity: 0.9;
+}
+
+/* =========================================
+   ENGAGEMENT METRICS
+   ========================================= */
+.scene span {
+  display: inline-block;
+  margin: 0 6px;
+  font-size: 14px;
+  opacity: 0.85;
+}
+
+/* =========================================
+   MAGNITUDE BADGE
+   ========================================= */
+#magnitudeBadge {
+  width: 60%;
+  max-width: 240px;
+  filter: drop-shadow(0 0 12px rgba(0, 255, 255, 0.35));
+}
+
+/* =========================================
+   FOOTER USERNAME
+   ========================================= */
+footer#userUsername {
+  position: absolute;
+  bottom: 16px;
+  left: 0;
+  right: 0;
+  font-size: 13px;
+  opacity: 0.6;
+  letter-spacing: 0.1em;
+}
+
+/* =========================================
+   DOWNLOAD BUTTON
+   ========================================= */
+#downloadBtn {
+  position: fixed;
+  bottom: 16px;
+  right: 16px;
+
+  background: rgba(0, 0, 0, 0.6);
+  color: #0ff;
+  border: 1px solid rgba(0, 255, 255, 0.4);
+  padding: 10px 14px;
+  border-radius: 999px;
+
+  font-size: 13px;
+  backdrop-filter: blur(6px);
+  cursor: pointer;
+}
+
+#downloadBtn:hover {
+  background: rgba(0, 255, 255, 0.15);
+}
+
+/* =========================================
+   RECORDING SAFETY
+   (prevents button flicker in video)
+   ========================================= */
+@media print {
+  #downloadBtn {
+    display: none;
+  }
+}

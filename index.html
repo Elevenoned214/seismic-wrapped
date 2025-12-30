@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Seismic Wrapped</title>
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/form.css">
+</head>
+<body>
+
+<div class="form-container">
+  <h1>SEISMIC WRAPPED</h1>
+
+  <form id="wrappedForm">
+    <label>X Username</label>
+    <input id="xUsername" placeholder="username (tanpa @)" required>
+
+    <label>Total Discord Chats</label>
+    <input id="discordChats" type="number" required>
+
+    <label>Magnitude</label>
+    <select id="magnitude" required>
+      <option value="">Select</option>
+      <option value="1">Magnitude 1</option>
+      <option value="2">Magnitude 2</option>
+      <option value="3">Magnitude 3</option>
+      <option value="4">Magnitude 4</option>
+      <option value="5">Magnitude 5</option>
+      <option value="6">Magnitude 6</option>
+      <option value="7">Magnitude 7</option>
+      <option value="8">Magnitude 8</option>
+      <option value="9">Magnitude 9</option>
+    </select>
+
+    <button type="submit">Generate</button>
+  </form>
+</div>
+
+<script src="js/form.js"></script>
+</body>
+</html>

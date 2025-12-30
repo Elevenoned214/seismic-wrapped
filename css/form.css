@@ -1,0 +1,11 @@
+.form-container {
+  max-width: 400px;
+  margin: 50px auto;
+  text-align: center;
+}
+
+input, select, button {
+  width: 100%;
+  margin: 10px 0;
+  padding: 10px;
+}
